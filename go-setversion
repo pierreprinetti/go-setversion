@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+declare -r \
+	config_file="${XDG_CONFIG_HOME:-${HOME}/.config}/go-setversion/paths.conf"
+
+declare \
+	go='/usr/bin/go' \
+	log_level="${GOSETVERSION_LOGLEVEL:-}"
+
+print_info() {
+	declare -r message="$*"
+	if [ "$log_level" == 'info' ]; then
+		>&2 echo "GOUP [INFO]: ${message}"
+	fi
+}
+
+goname_from_config() {
+	if ! [ -f "$config_file" ]; then
+		return
+	fi
+
+	declare target='' version=''
+
+	target="$(realpath "$PWD")/x" \
+
+	while [ "$target" != '/' ]; do
+		target="$(dirname "$target")"
+		version="$(sed -n "s|${target} ||p" "$config_file")"
+		if [ -n "$version" ]; then
+			printf "%s" "$version"
+			return
+		fi
+	done
+}
+
+if [ "${1:-}" == 'setversion' ]; then
+	mkdir -p "$(dirname "$config_file")"
+	touch "$config_file"
+
+	declare -r go_version="${2:-}"
+	sed -i "\|${PWD} |d" "$config_file"
+	if [ -n "$go_version" ]; then
+		echo "${PWD} go${go_version#go}" >> "$config_file"
+	fi
+	print_info "set path '${PWD} to '${go_version}'"
+	go version
+	exit 0
+fi
+
+
+v="$(goname_from_config)"
+
+if [ -z "$v" ]; then
+	print_info "no config match: using '$go'"
+else
+	print_info "config match: '$v'"
+	if ! [ -x "${GOBIN}/${v}" ]; then
+		"$go" install "golang.org/dl/${v}@latest"
+		"$v" download
+	fi
+	go="$v"
+fi
+
+"$go" "$@"
+exit $?

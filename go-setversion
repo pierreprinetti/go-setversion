@@ -9,6 +9,33 @@ declare \
 	go='/usr/bin/go' \
 	log_level="${GOSETVERSION_LOGLEVEL:-}"
 
+if [ "$(basename "$0")" == 'go-setversion' ]; then
+	case "${1:-}" in
+
+		''|'install')
+			ln -s "$(realpath "$0")" "${GOBIN}/go"
+			>&2 echo 'go-setversion installed to $GOBIN. Run "go setversion 1.18" to set the go version for the current path.'
+			;;
+
+		'reset')
+			rm "$config_file"
+			>&2 echo 'config file deleted. go-setversion has been reset.'
+			;;
+
+		'uninstall')
+			rm "${GOBIN}/go"
+			>&2 echo '$GOBIN/go deleted.'
+			;;
+
+		*)
+			>&2 echo "unknown command: ${1}"
+			exit 1
+			;;
+
+	esac
+	exit 0
+fi
+
 print_info() {
 	declare -r message="$*"
 	if [ "$log_level" == 'info' ]; then

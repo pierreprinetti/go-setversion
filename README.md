@@ -11,6 +11,10 @@ Assumptions:
 
 Download `go-setversion` and save it as `$GOBIN/go`.
 
+```shell
+$ curl -L https://raw.githubusercontent.com/pierreprinetti/go-setversion/main/go-setversion > "$GOBIN/go" && chmod +x "$GOBIN/go"
+```
+
 ## Use
 
 Set the current directory to Go v1.18:

@@ -9,6 +9,8 @@ declare \
 	go='/usr/bin/go' \
 	log_level="${GOSETVERSION_LOGLEVEL:-}"
 
+# Helper scripts. Useful if you have this script as `go-setversion` somewhere,
+# and `$GOBIN/go` is a symlink to it.
 if [ "$(basename "$0")" == 'go-setversion' ]; then
 	case "${1:-}" in
 
@@ -36,6 +38,8 @@ if [ "$(basename "$0")" == 'go-setversion' ]; then
 	exit 0
 fi
 
+# Only print logs if `GOSETVERSION_LOGLEVEL` is set to `info` in the
+# environment.
 print_info() {
 	declare -r message="$*"
 	if [ "$log_level" == 'info' ]; then
@@ -43,7 +47,34 @@ print_info() {
 	fi
 }
 
-goname_from_config() {
+# If this script is called with `$0 setversion`, then this function is executed
+# and the actual Go binary will not be called. This function saves `$PWD` to
+# the config file, and sets it to `$2`. If the Go version is not passed in
+# `$2`, then this function deletes this `$PWD` entry from the configuration.
+if [ "${1:-}" == 'setversion' ]; then
+	mkdir -p "$(dirname "$config_file")"
+	touch "$config_file"
+
+	declare -r go_version="${2:-}"
+	sed -i "\|${PWD} |d" "$config_file"
+	if [ -n "$go_version" ]; then
+		echo "${PWD} go${go_version#go}" >> "$config_file"
+	fi
+	print_info "set path '${PWD} to '${go_version}'"
+
+	# Calling `go version` here will ensure that the requested Go version
+	# is immediately prepared (see below).
+	go version
+	exit 0
+fi
+
+# Fetches the configured Go version from the config file. If no match is found,
+# looks in parent directories until `/`.
+#
+# The `while` loop will first look for a match with the full `$PWD`. Then it
+# will strip path elements one by one, virtually descending the filesystem tree
+# until it finds a match. If no match is found, it doesn't return anything.
+go_from_config() {
 	if ! [ -f "$config_file" ]; then
 		return
 	fi
@@ -62,33 +93,22 @@ goname_from_config() {
 	done
 }
 
-if [ "${1:-}" == 'setversion' ]; then
-	mkdir -p "$(dirname "$config_file")"
-	touch "$config_file"
+candidate_go="$(go_from_config)"
 
-	declare -r go_version="${2:-}"
-	sed -i "\|${PWD} |d" "$config_file"
-	if [ -n "$go_version" ]; then
-		echo "${PWD} go${go_version#go}" >> "$config_file"
-	fi
-	print_info "set path '${PWD} to '${go_version}'"
-	go version
-	exit 0
-fi
-
-
-v="$(goname_from_config)"
-
-if [ -z "$v" ]; then
+if [ -z "$candidate_go" ]; then
 	print_info "no config match: using '$go'"
 else
-	print_info "config match: '$v'"
-	if ! [ -x "${GOBIN}/${v}" ]; then
-		"$go" install "golang.org/dl/${v}@latest"
-		"$v" download
+	print_info "config match: '$candidate_go'"
+
+	# If there is a match in the configuration, then make sure that the
+	# corresponding Go version is installed and downloaded.
+	if ! [ -x "${GOBIN}/${candidate_go}" ]; then
+		"$go" install "golang.org/dl/${candidate_go}@latest"
+		"$candidate_go" download
 	fi
-	go="$v"
+	go="$candidate_go"
 fi
 
+# Finally, execute the actual Go binary with all the original arguments.
 "$go" "$@"
 exit $?

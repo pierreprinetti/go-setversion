@@ -3,11 +3,11 @@
 set -Eeuo pipefail
 
 declare -r \
-	config_file="${XDG_CONFIG_HOME:-${HOME}/.config}/go-setversion/paths.conf"
-
-declare \
-	go='/usr/bin/go' \
+	config_file="${XDG_CONFIG_HOME:-${HOME}/.config}/go-setversion/paths.conf" \
 	log_level="${GOSETVERSION_LOGLEVEL:-}"
+
+# Default to the system-wide installed Go.
+declare go='/usr/bin/go'
 
 # Helper scripts. Useful if you have this script as `go-setversion` somewhere,
 # and `$GOBIN/go` is a symlink to it.

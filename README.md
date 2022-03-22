@@ -12,7 +12,7 @@ Assumptions:
 Download `go-setversion` and save it as `$GOBIN/go`.
 
 ```shell
-$ curl -L https://raw.githubusercontent.com/pierreprinetti/go-setversion/main/go-setversion > "$GOBIN/go" && chmod +x "$GOBIN/go"
+curl -L https://raw.githubusercontent.com/pierreprinetti/go-setversion/main/go-setversion > "$GOBIN/go" && chmod +x "$GOBIN/go"
 ```
 
 ## Use
@@ -20,13 +20,13 @@ $ curl -L https://raw.githubusercontent.com/pierreprinetti/go-setversion/main/go
 Set the current directory to Go v1.18:
 
 ```shell
-$ go setversion 1.18
+go setversion 1.18
 ```
 
 Then, operate as usual:
 
 ```shell
-$ go build -o myproject .
+go build -o myproject .
 ```
 
 go-setversion will only intercept calls to `go setversion` and will pass the rest to the Go version of your choice.
@@ -36,20 +36,20 @@ go-setversion will only intercept calls to `go setversion` and will pass the res
 Remove any setversion settings for this directory:
 
 ```shell
-$ go setversion
+go setversion
 ```
 
 ## Reset
 
 ```shell
-$ rm  ${XDG_CONFIG_HOME:-${HOME}/.config}/go-setversion/paths.conf
+rm  ${XDG_CONFIG_HOME:-${HOME}/.config}/go-setversion/paths.conf
 ```
 
 ## Uninstall
 
 ```shell
-$ rm -f "$GOBIN/go"
-$ rm -rf ${XDG_CONFIG_HOME:-${HOME}/.config}/go-setversion
+rm -f "$GOBIN/go"
+rm -rf ${XDG_CONFIG_HOME:-${HOME}/.config}/go-setversion
 ```
 
 ## Tip
@@ -57,8 +57,8 @@ $ rm -rf ${XDG_CONFIG_HOME:-${HOME}/.config}/go-setversion
 When a new Go version is published, I set it as the default on my system with (for example):
 
 ```shell
-$ cd /
-$ go setversion 1.18rc1
+cd /
+go setversion 1.18rc1
 ```
 
 ## How do I work

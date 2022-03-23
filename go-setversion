@@ -64,8 +64,7 @@ if [ "${1:-}" == 'setversion' ]; then
 
 	# Calling `go version` here will ensure that the requested Go version
 	# is immediately prepared (see below).
-	go version
-	exit 0
+	exec go version
 fi
 
 # Fetches the configured Go version from the config file. If no match is found,
@@ -110,5 +109,4 @@ else
 fi
 
 # Finally, execute the actual Go binary with all the original arguments.
-"$go" "$@"
-exit $?
+exec "$go" "$@"

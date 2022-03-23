@@ -16,7 +16,7 @@ if [ "$(basename "$0")" == 'go-setversion' ]; then
 
 		''|'install')
 			ln -s "$(realpath "$0")" "${GOBIN}/go"
-			>&2 echo 'go-setversion installed to $GOBIN. Run "go setversion 1.18" to set the go version for the current path.'
+			>&2 echo "go-setversion installed to '$GOBIN'. Run "go setversion 1.18" to set the go version for the current path."
 			;;
 
 		'reset')
@@ -26,7 +26,7 @@ if [ "$(basename "$0")" == 'go-setversion' ]; then
 
 		'uninstall')
 			rm "${GOBIN}/go"
-			>&2 echo '$GOBIN/go deleted.'
+			>&2 echo "'$GOBIN/go' deleted."
 			;;
 
 		*)

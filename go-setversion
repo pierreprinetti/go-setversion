@@ -84,7 +84,7 @@ go_from_config() {
 
 	while [ "$target" != '/' ]; do
 		target="$(dirname "$target")"
-		version="$(sed -n "s|${target} ||p" "$config_file")"
+		version="$(sed -n "0,\|${target} |s|${target} ||p" "$config_file")"
 		if [ -n "$version" ]; then
 			printf "%s" "$version"
 			return

@@ -12,7 +12,7 @@ Assumptions:
 Download `go-setversion` and save it as `$GOBIN/go`.
 
 ```shell
-curl -L https://raw.githubusercontent.com/pierreprinetti/go-setversion/main/go-setversion > "$GOBIN/go" && chmod +x "$GOBIN/go"
+curl -L https://codeberg.org/pierreprinetti/go-setversion/raw/branch/main/go-setversion > "$GOBIN/go" && chmod +x "$GOBIN/go"
 ```
 
 ## Use

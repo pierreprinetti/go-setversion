@@ -1,3 +1,7 @@
+This is a mirror of https://codeberg.org/pierreprinetti/go-setversion
+
+---
+
 # go setversion
 
 I am a version selector for Go.
